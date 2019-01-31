@@ -4,7 +4,14 @@
             <div class="content_all content_left">
                 <navigateIndex></navigateIndex>
             </div>
-            <div class="content_all content_right">右</div>
+            <div class="content_all content_right">
+                <div class="right_header">
+                    touxiang
+                </div>
+                <div>
+                    <product></product>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -17,11 +24,12 @@
     import navigateIndex from '@/components/navigate/navigate.vue'
     import carousel from '@/components/carousel/carousel.vue'
     import slide from '@/components/slide/slide.vue'
+    import product from '@/components/product/product.vue'
 
     export default {
         name: 'index',
         components:{
-            footerIndex, headerIndex, navigateIndex, carousel, slide
+            footerIndex, headerIndex, navigateIndex, carousel, slide, product
         },
         data () {
             return {
@@ -45,16 +53,20 @@
 <style lang="less" scoped>
     .all {
         .content_all {
-            height: 100px;
+            height: 100%;
             float: left;
         }
         .content_left {
             width: 20%;
-            height: 100%;
+            height: 950px;
             border-right: 1px solid #CCC;
         }
         .content_right {
             width: 80%;
+            .right_header {
+                height: 60px;
+                border-bottom: 1px solid #CCC;
+            }
         }
         a {
             text-decoration:none;
