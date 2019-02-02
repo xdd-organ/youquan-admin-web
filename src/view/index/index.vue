@@ -9,7 +9,8 @@
                     touxiang
                 </div>
                 <div>
-                    <product></product>
+                    <!--<product></product>-->
+                    <partner></partner>
                 </div>
             </div>
         </div>
@@ -25,11 +26,12 @@
     import carousel from '@/components/carousel/carousel.vue'
     import slide from '@/components/slide/slide.vue'
     import product from '@/components/product/product.vue'
+    import partner from '@/components/partner/partner.vue'
 
     export default {
         name: 'index',
         components:{
-            footerIndex, headerIndex, navigateIndex, carousel, slide, product
+            footerIndex, headerIndex, navigateIndex, carousel, slide, product, partner
         },
         data () {
             return {

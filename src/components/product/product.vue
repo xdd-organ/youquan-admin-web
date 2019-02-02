@@ -3,7 +3,7 @@
         <div class="product_center product_list">
             <ul>
                 <li>产品中心</li>
-                <li v-for="(item, index) in product_list">
+                <li v-for="(item, index) in product_list" @click="selectProduct(item)">
                     <span>{{item.name}}</span>
                     <Button @click="show_delete = true" :size="delete_size" type="error" class="delete_product">删除</Button>
                     <Modal v-model="show_delete" width="360">
@@ -34,11 +34,11 @@
                 <div class="product_title title_list_one">产品名称</div>
                 <div class="product_title title_list_two">产品明细</div>
             </div>
-            <div class="product_title_list" v-for="item in product_category_list">
-                <div class="product_title title_list_one">{{item.category_name}}</div>
-                <div class="product_title title_list_two">{{item.category_content}}
+            <div class="product_title_list" v-for="(item, index) in product_category_list">
+                <div class="product_title title_list_one">{{item.name}}</div>
+                <div class="product_title title_list_two">{{item.content}}
                     <li class="delete_category">
-                        <Button :size="delete_size" type="error" class="delete_product">删除</Button>
+                        <Button :size="delete_size" type="error" class="delete_product" @click="deleteProductCategory(item, index)">删除</Button>
                     </li>
                 </div>
             </div>
@@ -49,8 +49,8 @@
                         title="新增产品内容"
                         @on-ok="saveProductCategory"
                         @on-cancel="cancel">
-                    产品名称：<Input v-model="temp_product_category.category_name" placeholder="新增产品名称" style="width:300px;" /><br/>
-                    类目详细：<Input v-model="temp_product_category.category_content" placeholder="新增类目详细" style="width:300px;margin-top: 20px" />
+                    产品名称：<Input v-model="temp_product_category.name" placeholder="新增产品名称" style="width:300px;" /><br/>
+                    类目详细：<Input v-model="temp_product_category.content" placeholder="新增类目详细" style="width:300px;margin-top: 20px" />
                 </Modal>
             </div>
         </div>
@@ -71,17 +71,13 @@
                 delete_size: "small",
                 temp_product_name: "",
                 modal_loading: false,
+                temp_product_id: "",
                 temp_product_category: {
-                    category_name: "",
-                    category_content: "",
+                    name: "",
+                    content: "",
                 },
                 product_list: [],
-                product_category_list: [
-                    {
-                        category_name: "产品名称",
-                        category_content: "产品详细内容产品详细",
-                    }
-                ]
+                product_category_list: []
             }
         },
         methods: {
@@ -99,9 +95,19 @@
                     });
             },
             saveProductCategory () {
-                this.$Message.info('新增成功');
-                this.product_category_list.push(this.temp_product_category)
-                this.temp_product_category = {};
+                var _this = this;
+                this.temp_product_category.product_id = this.temp_product_id;
+                http.post('/product/insertCategory',_this.temp_product_category)
+                    .then(function(response) {
+                        if (response.code == 100) {
+                            _this.$Message.info('新增成功');
+                            _this.product_category_list.push(response.data)
+                            _this.temp_product_category = {};
+                        } else {
+                            _this.$Message.info('新增失败');
+                        }
+                    });
+
             },
             cancel () {
                 this.$Message.info('取消新增');
@@ -122,12 +128,33 @@
                     });
 
             },
+            deleteProductCategory(product, index) {
+                var _this = this;
+                http.post('/product/updateProductCategory',{"id":product.id,"status": "1"})
+                    .then(function(response) {
+                        if (response.code == 100) {
+                            console.log(index)
+                            _this.product_category_list.splice(index, 1)
+                            _this.$Message.info('删除成功');
+                            _this.show_delete = false;
+                        } else {
+                            _this.$Message.info('删除失败');
+                        }
+                    });
+
+            },
+            selectProduct(item) {
+                this.temp_product_id = item.id;
+                this.product_category_list = item.category_list;
+            },
         },
         created:function () {
             var _this = this;
             http.post('/product/listByProduct',{"status": "0"})
                 .then(function(response) {
                     _this.product_list = response.data;
+                    _this.temp_product_id = response.data[0].id;
+                    _this.product_category_list = response.data[0].category_list;
                 });
         }
     }
@@ -155,7 +182,7 @@
             li:hover {
                 background: white;
                 font-weight: bold;
-                /*cursor: pointer;*/
+                cursor: pointer;
             }
             .delete_product {
                 float: right;
