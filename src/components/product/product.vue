@@ -83,10 +83,10 @@
         methods: {
             saveProduct () {
                 var _this = this;
-                this.$Message.info('新增成功');
                 http.post('/product/insert',{"name": _this.temp_product_name})
                     .then(function(response) {
                         if (response.code == 100) {
+                            this.$Message.info('新增成功');
                             _this.product_list.push(response.data);
                             _this.temp_product_name = "";
                         } else {
